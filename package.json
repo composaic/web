@@ -13,10 +13,7 @@
         "lint": "eslint 'src/**/*.{ts,tsx}'",
         "test": "jest"
     },
-    "author": {
-        "name": "Johnny Jarecsni",
-        "email": "johnny.jarecsni@icloud.com"
-    },
+    "author": "Johnny Jarecsni <johnny.jarecsni@icloud.com>",
     "license": "MIT",
     "devDependencies": {
         "@babel/core": "^7.21.5",
@@ -58,5 +55,18 @@
         "moduleNameMapper": {
             "\\.(css|scss)$": "identity-obj-proxy"
         }
-    }
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/composaic/web.git"
+    },
+    "keywords": [
+        "composaic",
+        "web",
+        "plugins"
+    ],
+    "bugs": {
+        "url": "https://github.com/composaic/web/issues"
+    },
+    "homepage": "https://github.com/composaic/web#readme"
 }
