@@ -1,0 +1,32 @@
+{
+    "plugin": "@composaic/views",
+    "version": "0.1.0",
+    "description": "Views Plugin",
+    "module": "index",
+    "package": "views",
+    "class": "ViewsPlugin",
+    "extensionPoints": [
+        {
+            "id": "views",
+            "type": "ViewsExtensionPoint"
+        }
+    ],
+    "extensions": [
+        {
+            "plugin": "self",
+            "id": "views",
+            "className": "SimpleViewsExtension",
+            "meta": [
+                {
+                    "container": "sample.container",
+                    "components": [
+                        {
+                            "slot": "master",
+                            "component": "SampleViewComponent"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -17,18 +17,7 @@ module.exports = (api) => {
             '@babel/preset-react'
         ],
         plugins: [
-            '@babel/plugin-transform-runtime',
-            // Add this custom plugin
-            {
-                visitor: {
-                    ImportDeclaration(path) {
-                        const source = path.node.source;
-                        if (source.value.endsWith('.scss')) {
-                            source.value = source.value.replace(/\.scss$/, '.css');
-                        }
-                    }
-                }
-            }
+            '@babel/plugin-transform-runtime'
         ]
     };
 };

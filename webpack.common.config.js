@@ -1,11 +1,17 @@
 const path = require('path');
-const nodeExternals = require('webpack-node-externals');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-
 
 module.exports = {
-    entry: './src/index.tsx',
-    externals: [nodeExternals()],
+    entry: './src/index.ts',
+    externals: {
+        'react': 'react',
+        'react-dom': 'react-dom',
+        'react-router-dom': 'react-router-dom',
+        '@mui/material': '@mui/material',
+        '@mui/styled-engine': '@mui/styled-engine',
+        '@emotion/react': '@emotion/react',
+        '@emotion/styled': '@emotion/styled',
+        '@composaic/core': '@composaic/core'
+    },
     module: {
         rules: [
             {
@@ -14,25 +20,48 @@ module.exports = {
                 exclude: /node_modules/,
             },
             {
-                test: /\.scss$/,
-                use: [
-                    MiniCssExtractPlugin.loader,
-                    'css-loader',
-                    'sass-loader'
-                ]
-            }
-        ],
-        plugins: [
-            new MiniCssExtractPlugin({
-                filename: '[name].css'
-            })
+                test: /\.s?css$/,
+                oneOf: [
+                    {
+                        test: /\.m\.s?css$/,
+                        use: [
+                            'style-loader',
+                            {
+                                loader: 'css-loader',
+                                options: {
+                                    modules: {
+                                        localIdentName: '[name]__[local]__[hash:base64:5]',
+                                        exportLocalsConvention: 'camelCase',
+                                    },
+                                    importLoaders: 1,
+                                },
+                            },
+                            'sass-loader',
+                        ],
+                    },
+                    {
+                        use: [
+                            'style-loader',
+                            'css-loader',
+                            'sass-loader',
+                        ],
+                    },
+                ],
+            },
         ]
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.js'],
+        extensions: ['.tsx', '.ts', '.js', '.scss', '.css'],
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'index.js',
+        clean: true,
     },
+    mode: 'production',
+    optimization: {
+        minimize: true,
+        sideEffects: true,
+        usedExports: true
+    }
 };
