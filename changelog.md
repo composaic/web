@@ -1,5 +1,9 @@
 # Changelog
 
+# 0.1.4 (1 Feb 2024)
+
+o DevContainer fixes
+
 ## 0.1.2 & 0.1.3 (26 Jan 2025)
 
 o Added ViewsExtensionPoint to exported types
