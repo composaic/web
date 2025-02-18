@@ -17,7 +17,10 @@ module.exports = (api) => {
       '@babel/preset-typescript',
       '@babel/preset-react',
     ],
-    plugins: ['@babel/plugin-transform-runtime'],
+    plugins: [
+      ['@babel/plugin-proposal-decorators', { version: '2023-05' }],
+      '@babel/plugin-transform-runtime',
+    ],
     sourceMaps: true,
     retainLines: true,
   };
