@@ -12,9 +12,11 @@
     "scripts": {
         "build:cjs": "webpack --config webpack.cjs.config.js --output-path dist/cjs",
         "build:esm": "webpack --config webpack.esm.config.js --output-path dist/esm",
+        "build:esm:dev": "webpack --config webpack.esm.config.js --output-path dist/esm --env development",
         "build:types": "tsc --emitDeclarationOnly --declaration -p tsconfig.base.json --outDir dist/types",
         "build:scss": "sass src/:dist/esm/ --no-source-map && sass src/:dist/cjs/ --no-source-map",
         "build": "rm -rf dist && npm run build:cjs && npm run build:esm && npm run build:types",
+        "build:dev": "rm -rf dist && npm run build:cjs && npm run build:esm:dev && npm run build:types",
         "prepack": "npm run clean && npm run build",
         "clean": "rimraf dist",
         "lint": "eslint 'src/**/*.{ts,tsx}'",
