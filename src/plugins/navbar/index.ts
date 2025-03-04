@@ -1,11 +1,10 @@
-// Assuming necessary imports based on the LoggerPlugin example
-import { Plugin } from '@composaic/core';
+import { Plugin, PluginMetadata, ExtensionMetadata } from '@composaic/core';
 
 // Components exposed by this plugin module
 export { Example1Page } from './Example1Page';
 export { Example2Page } from './Example2Page';
 
-// Define a hypothetical NavbarItem type for demonstration
+// Define NavbarItem type
 export type NavbarItem = {
     id: string;
     mountAt?: string;
@@ -25,6 +24,17 @@ export interface NavbarExtensionPoint {
     getNavbarItems(): NavbarItem[];
 }
 
+@PluginMetadata({
+    plugin: '@composaic/navbar',
+    version: '0.1.0',
+    description: 'Navbar Plugin',
+    module: 'index',
+    package: 'navbar',
+    extensionPoints: [{
+        id: 'navbarItem',
+        type: 'NavbarExtensionPoint'
+    }]
+})
 export class NavbarPlugin extends Plugin {
     private navbarItems: NavbarItem[] = [];
 
@@ -88,6 +98,35 @@ export class NavbarPlugin extends Plugin {
     }
 }
 
+@ExtensionMetadata({
+    plugin: 'self',
+    id: 'navbarItem',
+    className: 'SimpleNavbarExtension',
+    meta: [
+        {
+            id: 'root.Examples',
+            mountAt: 'root.Profile',
+            label: 'Examples',
+            children: [
+                {
+                    label: 'Example 1',
+                    path: '/example1',
+                    component: 'Example1Page'
+                },
+                {
+                    label: 'Example 2',
+                    path: '/example2',
+                    component: 'Example2Page'
+                }
+            ]
+        },
+        {
+            id: 'root.Profile',
+            label: 'Profile',
+            children: []
+        }
+    ]
+})
 export class SimpleNavbarExtension implements NavbarExtensionPoint {
     getNavbarItems(): NavbarItem[] {
         return [];

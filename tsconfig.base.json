@@ -6,7 +6,7 @@
         "forceConsistentCasingInFileNames": true,
         "declarationMap": true,
         "sourceMap": true,
-        "jsx": "react",
+        "jsx": "react-jsx",
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
         "resolveJsonModule": true,
@@ -20,7 +20,12 @@
             "@/*": [
                 "src/*"
             ]
-        }
+        },
+        "target": "ES2020",
+        "allowJs": true,
+        "noFallthroughCasesInSwitch": true,
+        "module": "esnext",
+        "isolatedModules": true
     },
     "include": [
         "./src/**/*"

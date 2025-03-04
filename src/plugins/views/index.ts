@@ -1,4 +1,4 @@
-import { Plugin } from '@composaic/core';
+import { Plugin, PluginMetadata, ExtensionMetadata } from '@composaic/core';
 
 export { SampleViewComponent } from './SampleViewComponent';
 
@@ -15,6 +15,7 @@ export type ViewDefinition = {
         plugin: string;
     }[];
 };
+
 /**
  * Views extension point.
  */
@@ -22,15 +23,23 @@ export interface ViewsExtensionPoint {
     getViewDefinitions(): ViewDefinition[];
 }
 
-/**
- * Represents a plugin that manages views in the application.
- */
+@PluginMetadata({
+    plugin: '@composaic/views',
+    version: '0.1.0',
+    description: 'Views Plugin',
+    module: 'index',
+    package: 'views',
+    extensionPoints: [{
+        id: 'views',
+        type: 'ViewsExtensionPoint'
+    }]
+})
 export class ViewsPlugin extends Plugin {
     private viewsDefinitons: ViewDefinition[] = [];
 
     async start() {
         super.start();
-        // Collect navbar items from all connected extensions
+        // Collect views definitions from all connected extensions
         const pluginViewsDefinitons: PluginViewDefinition[] = [];
         this.getConnectedExtensions('views').forEach((extension) => {
             const navBarMeta = extension.meta! as PluginViewDefinition[];
@@ -42,9 +51,7 @@ export class ViewsPlugin extends Plugin {
         this.viewsDefinitons = this.consolidateViews(pluginViewsDefinitons);
     }
 
-    consolidateViews(
-        pluginViewDefinitions: PluginViewDefinition[]
-    ): ViewDefinition[] {
+    consolidateViews(pluginViewDefinitions: PluginViewDefinition[]): ViewDefinition[] {
         const viewDefinitions: ViewDefinition[] = [];
         pluginViewDefinitions.forEach((pluginViewDefinition) => {
             const existingViewDefinition = viewDefinitions.find(
@@ -74,15 +81,9 @@ export class ViewsPlugin extends Plugin {
     }
 
     async stop() {
-        // Clear navbar items or any other cleanup
         this.viewsDefinitons = [];
     }
 
-    /**
-     * Retrieves the view definition for the specified container.
-     * @param container - The container name.
-     * @returns The view definition for the specified container, or undefined if not found.
-     */
     public getViewsByContainer(container: string): ViewDefinition | undefined {
         return this.viewsDefinitons.find(
             (viewDefinition) => viewDefinition.container === container
@@ -90,7 +91,22 @@ export class ViewsPlugin extends Plugin {
     }
 }
 
-// TODO: This is unnecessary as the information is provided by the manifest
+@ExtensionMetadata({
+    plugin: 'self',
+    id: 'views',
+    className: 'SimpleViewsExtension',
+    meta: [
+        {
+            container: 'sample.container',
+            components: [
+                {
+                    slot: 'master',
+                    component: 'SampleViewComponent'
+                }
+            ]
+        }
+    ]
+})
 export class SimpleViewsExtension implements ViewsExtensionPoint {
     getViewDefinitions(): ViewDefinition[] {
         return [];
