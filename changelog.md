@@ -1,5 +1,9 @@
 # Changelog
 
+# 0.2 (4 Mar 2025)
+
+o Official Annotations based plugins
+
 # 0.1.5 (26 Feb 2025)
 
 o tagging release
