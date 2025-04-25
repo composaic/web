@@ -1,10 +1,10 @@
 {
+    "package": "navbar",
+    "module": "index",
+    "class": "NavbarPlugin",
     "plugin": "@composaic/navbar",
     "version": "0.1.0",
     "description": "Navbar Plugin",
-    "module": "index",
-    "package": "navbar",
-    "class": "NavbarPlugin",
     "extensionPoints": [
         {
             "id": "navbarItem",

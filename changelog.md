@@ -1,5 +1,9 @@
 # Changelog
 
+# 0.2.1 (25 Apr 2025)
+
+o Add LocalEventBus to exported members
+
 # 0.2 (4 Mar 2025)
 
 o Official Annotations based plugins
