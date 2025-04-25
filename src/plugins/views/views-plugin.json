@@ -1,10 +1,10 @@
 {
+    "package": "views",
+    "module": "index",
+    "class": "ViewsPlugin",
     "plugin": "@composaic/views",
     "version": "0.1.0",
     "description": "Views Plugin",
-    "module": "index",
-    "package": "views",
-    "class": "ViewsPlugin",
     "extensionPoints": [
         {
             "id": "views",
