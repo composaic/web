@@ -1,38 +1,22 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { ViewContext } from './ViewContext';
+import React, { useEffect, useState } from 'react';
 import { PluginManager } from '@composaic/core';
-import { ViewsPlugin, ViewDefinition } from '..';
-import { LocalEventBus } from '../LocalEventBus';
+import { ViewsPlugin } from '..';
 
 interface ViewComponentProps {
   slot: string;
 }
 
-interface ViewableComponentProps {
-  events: LocalEventBus;
-}
-
 export const ViewComponent: React.FC<ViewComponentProps> = ({ slot }) => {
-  const { context, eventBus } = useContext(ViewContext);
-  const [Component, setComponent] =
-    useState<React.FC<ViewableComponentProps> | null>(null);
+  const [Component, setComponent] = useState<React.FC | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    if (!context) {
-      console.log(`[ViewComponent:${slot}] No context available`);
-      setLoading(false);
-      return;
-    }
-
     let isMounted = true;
 
     async function loadComponent() {
       try {
-        console.log(
-          `[ViewComponent:${slot}] Starting component load for context: ${context}`,
-        );
+        console.log(`[ViewComponent:${slot}] Starting component load`);
         setLoading(true);
         setError(null);
 
@@ -55,9 +39,21 @@ export const ViewComponent: React.FC<ViewComponentProps> = ({ slot }) => {
         console.log(
           `[ViewComponent:${slot}] Got views plugin, getting container views`,
         );
-        const containerViews = viewsPlugin.getViewsByContainer(context);
+        // Use parent div's data attribute to get container id
+        const containerElement = document.querySelector(
+          '[data-view-container]',
+        );
+        const containerId = containerElement?.getAttribute(
+          'data-view-container',
+        );
+
+        if (!containerId) {
+          throw new Error('No container ID found');
+        }
+
+        const containerViews = viewsPlugin.getViewsByContainer(containerId);
         if (!containerViews) {
-          throw new Error(`No views found for container: ${context}`);
+          throw new Error(`No views found for container: ${containerId}`);
         }
 
         console.log(`[ViewComponent:${slot}] Container views:`, containerViews);
@@ -102,7 +98,7 @@ export const ViewComponent: React.FC<ViewComponentProps> = ({ slot }) => {
         );
         const ComponentToRender = pluginInstance.getModule(
           slotComponent.component.component,
-        ) as React.FC<ViewableComponentProps>;
+        ) as React.FC;
 
         if (!ComponentToRender) {
           throw new Error(
@@ -133,7 +129,7 @@ export const ViewComponent: React.FC<ViewComponentProps> = ({ slot }) => {
       console.log(`[ViewComponent:${slot}] Cleanup - marking as unmounted`);
       isMounted = false;
     };
-  }, [context, slot]);
+  }, [slot]);
 
   if (loading) {
     console.log(`[ViewComponent:${slot}] Rendering loading state`);
@@ -148,11 +144,11 @@ export const ViewComponent: React.FC<ViewComponentProps> = ({ slot }) => {
     return <div>Error loading component: {error.message}</div>;
   }
 
-  if (!Component || !eventBus) {
-    console.log(`[ViewComponent:${slot}] No component or event bus available`);
+  if (!Component) {
+    console.log(`[ViewComponent:${slot}] No component available`);
     return null;
   }
 
   console.log(`[ViewComponent:${slot}] Rendering component`);
-  return <Component events={eventBus} />;
+  return <Component />;
 };
