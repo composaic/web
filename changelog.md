@@ -1,5 +1,9 @@
 # Changelog
 
+# 0.3.0 (24 May 2025)
+
+o View refactoring (composite views), Part I.
+
 # 0.2.1 (25 Apr 2025)
 
 o Add LocalEventBus to exported members
