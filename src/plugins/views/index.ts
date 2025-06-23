@@ -1,27 +1,26 @@
 import { Plugin, PluginMetadata, ExtensionMetadata } from '@composaic/core';
+import {
+  ViewsExtensionPoint,
+  ComponentsExtensionPoint,
+  ViewDefinition,
+  PluginViewDefinition,
+  ComponentDefinition,
+  ValidationResult,
+} from './types';
+import { ComponentTypeValidator } from './validation/ComponentTypeValidator';
 
 export { SampleViewComponent } from './SampleViewComponent';
+export { DynaComponent } from './components/DynaComponent';
 
-export type PluginViewDefinition = {
-  container: string;
-  components: { slot: string; component: string }[];
-  plugin: string;
-};
-
-export type ViewDefinition = {
-  container: string;
-  components: {
-    component: { slot: string; component: string };
-    plugin: string;
-  }[];
-};
-
-/**
- * Views extension point.
- */
-export interface ViewsExtensionPoint {
-  getViewDefinitions(): ViewDefinition[];
-}
+// Re-export types for external use
+export type {
+  ViewsExtensionPoint,
+  ComponentsExtensionPoint,
+  ViewDefinition,
+  PluginViewDefinition,
+  ComponentDefinition,
+  ValidationResult,
+} from './types';
 
 @PluginMetadata({
   plugin: '@composaic/views',
@@ -34,16 +33,34 @@ export interface ViewsExtensionPoint {
       id: 'views',
       type: 'ViewsExtensionPoint',
     },
+    {
+      id: 'components',
+      type: 'ComponentsExtensionPoint',
+    },
   ],
 })
 export class ViewsPlugin extends Plugin {
   private viewsDefinitons: ViewDefinition[] = [];
+  private componentDefinitions: ComponentDefinition[] = [];
+  private typeValidator: ComponentTypeValidator;
+
+  constructor() {
+    super();
+    this.typeValidator = new ComponentTypeValidator();
+  }
 
   async start() {
-    console.log('[ViewsPlugin] Starting plugin initialization');
+    console.log('🔵 VIEWS_DEBUG: Plugin start() called');
     super.start();
     await this.initializeViews();
-    console.log('[ViewsPlugin] Plugin initialization complete');
+    await this.initializeComponents();
+
+    console.log(
+      '🔵 VIEWS_DEBUG: Final state - Views:',
+      this.viewsDefinitons.length,
+      'Components:',
+      this.componentDefinitions.length,
+    );
   }
 
   private async initializeViews() {
@@ -114,9 +131,42 @@ export class ViewsPlugin extends Plugin {
     return viewDefinitions;
   }
 
+  private async initializeComponents() {
+    console.log('🔵 COMP_DEBUG: initializeComponents() called');
+
+    // Clear existing component definitions to avoid duplicates
+    this.componentDefinitions = [];
+
+    // Collect component definitions from all connected extensions
+    const extensions = this.getConnectedExtensions('components');
+    console.log('🔵 COMP_DEBUG: Found extensions:', extensions?.length || 0);
+
+    if (extensions && extensions.length > 0) {
+      extensions.forEach((extension) => {
+        const componentMeta = extension.meta! as ComponentDefinition[];
+        if (componentMeta && Array.isArray(componentMeta)) {
+          for (const component of componentMeta) {
+            component.plugin = extension.plugin;
+            this.componentDefinitions.push(component);
+          }
+        }
+      });
+    }
+
+    console.log(
+      '🔵 COMP_DEBUG: Final components:',
+      this.componentDefinitions.length,
+    );
+    console.log(
+      '🔵 COMP_DEBUG: Component IDs:',
+      this.componentDefinitions.map((def) => def.componentId),
+    );
+  }
+
   async stop() {
     console.log('[ViewsPlugin] Stopping plugin');
     this.viewsDefinitons = [];
+    this.componentDefinitions = [];
   }
 
   public getViewsByContainer(container: string): ViewDefinition | undefined {
@@ -132,6 +182,38 @@ export class ViewsPlugin extends Plugin {
 
     console.log('[ViewsPlugin] Found views for container:', views);
     return views;
+  }
+
+  public getComponentById(
+    componentId: string,
+  ): ComponentDefinition | undefined {
+    const component = this.componentDefinitions.find(
+      (def) => def.componentId === componentId,
+    );
+
+    console.log(
+      '🔵 COMP_DEBUG: getComponentById:',
+      componentId,
+      component ? '✅ FOUND' : '❌ NOT FOUND',
+    );
+    return component;
+  }
+
+  public getAllComponents(): ComponentDefinition[] {
+    console.log(
+      '[ViewsPlugin] getAllComponents called, returning:',
+      this.componentDefinitions,
+    );
+    return this.componentDefinitions;
+  }
+
+  public validateProps(componentId: string, props: any): ValidationResult {
+    const component = this.getComponentById(componentId);
+    if (!component) {
+      return { success: false, error: `Component not found: ${componentId}` };
+    }
+
+    return this.typeValidator.validate(component.properties, props);
   }
 }
 
