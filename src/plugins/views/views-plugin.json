@@ -9,6 +9,10 @@
         {
             "id": "views",
             "type": "ViewsExtensionPoint"
+        },
+        {
+            "id": "components",
+            "type": "ComponentsExtensionPoint"
         }
     ],
     "extensions": [
