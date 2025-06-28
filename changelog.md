@@ -1,5 +1,9 @@
 # Changelog
 
+# 0.4.0 (28 Jun 2025)
+
+o DynaComponent for defining components which can be substituted at runtime
+
 # 0.3.0 (24 May 2025)
 
 o View refactoring (composite views), Part I.
