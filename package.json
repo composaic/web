@@ -22,7 +22,7 @@
         "clean": "rm -rf .manifest-cache",
         "lint": "eslint 'src/**/*.{ts,tsx}'",
         "test": "jest",
-        "build:manifests": "manifest-gen generate -c plugin-manifest.config.js",
+        "build:manifests": "manifest-gen generate -c plugin-manifest.config.js ${FORCE_MANIFEST_GENERATION:+--force}",
         "prebuild": "npm run clean && npm run build:manifests",
         "prebuild:dev": "npm run clean && npm run build:manifests"
     },
